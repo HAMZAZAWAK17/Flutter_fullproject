@@ -12,6 +12,7 @@ class WeatherPage extends StatefulWidget {
 class _WeatherPageState extends State<WeatherPage> {
   
   var _country = "Maroc";
+  var _countryCode = "MA"; // Code pays pour l'API de drapeaux
  
   var _temp; // dynamic
  
@@ -105,7 +106,18 @@ class _WeatherPageState extends State<WeatherPage> {
                         children: [
                           Column(
                             children: [
-                              const Icon(Icons.wb_sunny, color: Colors.orange),
+                              // Affichage du drapeau
+                              if (_countryCode.isNotEmpty)
+                                Image.network(
+                                  "https://flagsapi.com/$_countryCode/flat/64.png", 
+                                  height: 50,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons.public, size: 50, color: Colors.blueAccent);
+                                  },
+                                )
+                              else 
+                                const Icon(Icons.public, size: 50, color: Colors.blueAccent),
+
                               const Text("Pays"),
                               Text(_country, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                             ],
@@ -169,13 +181,16 @@ class _WeatherPageState extends State<WeatherPage> {
         
         // Mise à jour de l'interface
         _country = weatherData['sys']['country'];
-        
+        _countryCode = weatherData['sys']['country']; // Récupération du code pays
+
         // Override manuel pour des raisons politiques/préférences utilisateur
         if (_city.toLowerCase() == 'dakhla') {
            _country = 'Maroc';
+           _countryCode = 'MA';
         }
         if (_city.toLowerCase() == 'al-quds' || _city.toLowerCase() == 'le qods' || weatherData['name'].toString().toLowerCase() == 'jerusalem') {
            _country = 'Palestine';
+           _countryCode = 'PS';
            if (_city.toLowerCase() == 'al-quds' || _city.toLowerCase() == 'le qods') {
              // Garder le nom affiché comme demandé
            } else {
