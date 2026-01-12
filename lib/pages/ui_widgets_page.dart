@@ -19,11 +19,12 @@ class _UiWidgetsPageState extends State<UiWidgetsPage> with SingleTickerProvider
   String? _radioGroupValue = 'Option 1';
   int _selectedIndex = 0; // For Chips
   int _navBarIndex = 0;
+  int _currentStep = 0; // Pour le Stepper
   
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 6, vsync: this);
+    _tabController = TabController(length: 8, vsync: this);
   }
 
   @override
@@ -44,9 +45,11 @@ class _UiWidgetsPageState extends State<UiWidgetsPage> with SingleTickerProvider
           tabs: const [
             Tab(icon: Icon(Icons.touch_app), text: 'Boutons'),
             Tab(icon: Icon(Icons.check_box), text: 'Sélection'),
+            Tab(icon: Icon(Icons.text_fields), text: 'Saisie'),
             Tab(icon: Icon(Icons.notifications), text: 'Comm.'),
             Tab(icon: Icon(Icons.layers), text: 'Conteneurs'),
             Tab(icon: Icon(Icons.map), text: 'Navigation'),
+            Tab(icon: Icon(Icons.info), text: 'Affichage'),
             Tab(icon: Icon(Icons.video_library), text: 'Médias'),
           ],
         ),
@@ -56,9 +59,11 @@ class _UiWidgetsPageState extends State<UiWidgetsPage> with SingleTickerProvider
         children: [
           _buildButtonsTab(),
           _buildSelectionTab(),
+          _buildInputsTab(),
           _buildCommunicationTab(),
           _buildContainmentTab(),
           _buildNavigationTab(),
+          _buildDisplayTab(),
           _buildMediaTab(),
         ],
       ),
@@ -268,7 +273,78 @@ class _UiWidgetsPageState extends State<UiWidgetsPage> with SingleTickerProvider
   }
 
   // ---------------------------------------------------------------------------
-  // 3. COMMUNICATION TAB
+  // 3. INPUTS TAB (Nouvel onglet)
+  // ---------------------------------------------------------------------------
+  Widget _buildInputsTab() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        _buildHeader('Champs de Texte (TextField)'),
+        const TextField(
+          decoration: InputDecoration(
+            labelText: 'Standard',
+            hintText: 'Entrez du texte...',
+          ),
+        ),
+        const SizedBox(height: 20),
+        const TextField(
+          decoration: InputDecoration(
+            labelText: 'Outlined',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.person),
+          ),
+        ),
+        const SizedBox(height: 20),
+        const TextField(
+          decoration: InputDecoration(
+            labelText: 'Filled',
+            filled: true,
+            prefixIcon: Icon(Icons.email),
+          ),
+        ),
+        const SizedBox(height: 20),
+        const TextField(
+          obscureText: true,
+          decoration: InputDecoration(
+            labelText: 'Mot de passe',
+            border: OutlineInputBorder(),
+            suffixIcon: Icon(Icons.visibility),
+          ),
+        ),
+        const SizedBox(height: 20),
+        TextField(
+          decoration: InputDecoration(
+            labelText: 'Erreur',
+            errorText: 'Valeur incorrecte',
+            border: const OutlineInputBorder(),
+          ),
+        ),
+        const Divider(height: 30),
+
+        _buildHeader('Search Bar'),
+        SearchBar(
+          hintText: 'Rechercher...',
+          leading: const Icon(Icons.search),
+          onChanged: (value) {},
+        ),
+        const SizedBox(height: 20),
+        const Divider(height: 30),
+        
+        _buildHeader('Formulaire Multiligne'),
+        const TextField(
+          maxLines: 4,
+          decoration: InputDecoration(
+            labelText: 'Description',
+            alignLabelWithHint: true,
+            border: OutlineInputBorder(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 4. COMMUNICATION TAB
   // ---------------------------------------------------------------------------
   Widget _buildCommunicationTab() {
     return ListView(
@@ -542,6 +618,122 @@ class _UiWidgetsPageState extends State<UiWidgetsPage> with SingleTickerProvider
                 ),
               ),
             ],
+          ),
+      ],
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 7. DISPLAY TAB (Nouvel onglet)
+  // ---------------------------------------------------------------------------
+  Widget _buildDisplayTab() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        _buildHeader('Expansion Tile'),
+        Card(
+          child: ExpansionTile(
+            title: const Text('Titre Déroulable'),
+            subtitle: const Text('Cliquez pour voir plus'),
+            leading: const Icon(Icons.info),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: const Text('Voici le contenu caché qui apparaît lorsque vous déroulez la tuile. Très utile pour les FAQ ou les détails complexes.'),
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 30),
+
+        _buildHeader('Stepper'),
+        Stepper(
+          currentStep: _currentStep,
+          onStepContinue: () {
+            if (_currentStep < 2) {
+              setState(() => _currentStep += 1);
+            }
+          },
+          onStepCancel: () {
+            if (_currentStep > 0) {
+              setState(() => _currentStep -= 1);
+            }
+          },
+          steps: const [
+            Step(
+              title: Text('Étape 1'),
+              content: Text('Contenu de l\'étape 1'),
+              isActive: true,
+            ),
+            Step(
+              title: Text('Étape 2'),
+              content: Text('Contenu de l\'étape 2'),
+              isActive: true,
+            ),
+            Step(
+              title: Text('Étape 3'),
+              content: Text('Validation finale'),
+              isActive: true,
+            ),
+          ],
+        ),
+        const Divider(height: 30),
+
+        _buildHeader('Data Table'),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text('ID')),
+              DataColumn(label: Text('Nom')),
+              DataColumn(label: Text('Role')),
+            ],
+            rows: const [
+              DataRow(cells: [
+                DataCell(Text('1')),
+                DataCell(Text('Alice')),
+                DataCell(Text('Admin')),
+              ]),
+              DataRow(cells: [
+                DataCell(Text('2')),
+                DataCell(Text('Bob')),
+                DataCell(Text('User')),
+              ]),
+              DataRow(cells: [
+                DataCell(Text('3')),
+                DataCell(Text('Charlie')),
+                DataCell(Text('Guest')),
+              ]),
+            ],
+          ),
+        ),
+        const Divider(height: 30),
+
+        _buildHeader('Tooltip'),
+        Center(
+          child: Tooltip(
+            message: 'Ceci est une info-bulle !',
+            child: ElevatedButton(
+              onPressed: () {},
+              child: const Text('Maintenir pour Tooltip'),
+            ),
+          ),
+        ),
+        const Divider(height: 30),
+
+        _buildHeader('Grid View (Aperçu)'),
+        SizedBox(
+          height: 200,
+          child: GridView.count(
+            crossAxisCount: 3,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            children: List.generate(6, (index) {
+              return Container(
+                color: Colors.primaries[index % Colors.primaries.length].shade200,
+                child: Center(child: Text('Item $index')),
+              );
+            }),
           ),
         ),
       ],
