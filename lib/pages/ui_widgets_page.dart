@@ -619,6 +619,7 @@ class _UiWidgetsPageState extends State<UiWidgetsPage> with SingleTickerProvider
               ),
             ],
           ),
+        ),
       ],
     );
   }
